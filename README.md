@@ -56,6 +56,22 @@ pytest -m e2e --headed # watch the browser
 - Assertion messages include the HTTP status and response body.
 - Reports and traces may contain account data. Review them before sharing.
 
+## CI: self-hosted runner in Docker (manual trigger)
+
+The workflow `.github/workflows/unifi-tests.yml` runs only on demand (Actions → *UniFi tests* → *Run workflow*).
+Job `api` (pytest + requests) runs first, then job `e2e` (Playwright). Each uploads its reports
+(`api.html`/`api.xml`, `e2e.html`/`e2e.xml`, plus screenshots/traces on failure) as artifacts.
+
+1. Install Docker Engine inside WSL2 Ubuntu and start it. Start the UniFi server too.
+2. Add these repository secrets: `UNIFI_ADMIN_USERNAME`, `UNIFI_ADMIN_PASSWORD`,
+   `UNIFI_ADMIN_TOTP_SECRET`, `UNIFI_LOCAL_USER_PASSWORD`.
+3. `cd runner`, copy `.env.example` to `.env`, fill in `REPO_URL` and a fresh `RUNNER_TOKEN`
+   (Settings → Actions → Runners → New self-hosted runner), then `docker compose up -d --build`.
+4. The container reaches UniFi at `https://host.docker.internal:11443` (`host-gateway` mapping in the compose file).
+
+Security: the workflow has no `pull_request` trigger. For a public repository also set
+Settings → Actions → General → *Require approval for all outside collaborators*.
+
 ## Design notes
 
 - `unifi_tests/api_client.py` – thin REST client (login, roles, create/list/delete user, logout).

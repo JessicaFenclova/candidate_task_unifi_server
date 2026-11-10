@@ -1,0 +1,56 @@
+name: UniFi tests
+
+# Manual only: the self-hosted runner and the UniFi server run on a personal machine.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  UNIFI_BASE_URL: https://host.docker.internal:11443
+  UNIFI_ADMIN_USERNAME: ${{ secrets.UNIFI_ADMIN_USERNAME }}
+  UNIFI_ADMIN_PASSWORD: ${{ secrets.UNIFI_ADMIN_PASSWORD }}
+  UNIFI_ADMIN_TOTP_SECRET: ${{ secrets.UNIFI_ADMIN_TOTP_SECRET }}
+  UNIFI_LOCAL_USER_PASSWORD: ${{ secrets.UNIFI_LOCAL_USER_PASSWORD }}
+
+jobs:
+  api:
+    name: Pytest API tests
+    runs-on: [self-hosted, unifi]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -q -r requirements.txt
+      - name: Run API tests
+        run: .venv/bin/pytest -m api --html=reports/api.html --junitxml=reports/api.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-reports
+          path: reports/
+          if-no-files-found: warn
+
+  e2e:
+    name: Playwright e2e tests
+    needs: api
+    runs-on: [self-hosted, unifi]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -q -r requirements.txt
+          .venv/bin/playwright install chromium
+      - name: Run Playwright tests
+        run: .venv/bin/pytest -m e2e --html=reports/e2e.html --junitxml=reports/e2e.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-reports
+          path: |
+            reports/
+            test-results/
+          if-no-files-found: warn

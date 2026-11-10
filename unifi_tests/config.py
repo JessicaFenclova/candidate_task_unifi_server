@@ -1,6 +1,8 @@
 import os
+import tempfile
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import pyotp
 from dotenv import load_dotenv
@@ -8,6 +10,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 _last_otp: dict[str, str] = {}
+_STATE_FILE = Path(tempfile.gettempdir()) / "unifi_tests_last_otp"
+
+
+def _read_state() -> str:
+    try:
+        return _STATE_FILE.read_text().strip()
+    except OSError:
+        return ""
 
 
 @dataclass(frozen=True)
@@ -25,10 +35,15 @@ class Settings:
             return ""
         totp = pyotp.TOTP(self.admin_totp_secret)
         code = totp.now()
-        while code == _last_otp.get("code"):
+        # The state file extends the guard across processes (e.g. consecutive CI jobs on one runner).
+        while code in (_last_otp.get("code"), _read_state()):
             time.sleep(1)
             code = totp.now()
         _last_otp["code"] = code
+        try:
+            _STATE_FILE.write_text(code)
+        except OSError:
+            pass
         return code
 
 

@@ -27,6 +27,6 @@ RUN python3 -m venv /home/runner/venv \
     && /home/runner/venv/bin/pip install --no-cache-dir -q -r /home/runner/requirements.txt \
     && /home/runner/venv/bin/python -m playwright install --with-deps chromium
 
-COPY --chown=runner:runner entrypoint.sh /home/runner/entrypoint.sh
+COPY --chown=runner:runner runner/entrypoint.sh /home/runner/entrypoint.sh
 RUN chmod +x /home/runner/entrypoint.sh
 ENTRYPOINT ["/home/runner/entrypoint.sh"]

@@ -20,6 +20,13 @@ USER root
 RUN ./bin/installdependencies.sh && rm -rf /var/lib/apt/lists/*
 USER runner
 
+# Pre-baked virtualenv so workflow runs reuse the installed packages and browser
+# instead of reinstalling them (including OS deps) on every single run.
+COPY --chown=runner:runner requirements.txt /home/runner/requirements.txt
+RUN python3 -m venv /home/runner/venv \
+    && /home/runner/venv/bin/pip install --no-cache-dir -q -r /home/runner/requirements.txt \
+    && /home/runner/venv/bin/python -m playwright install --with-deps chromium
+
 COPY --chown=runner:runner entrypoint.sh /home/runner/entrypoint.sh
 RUN chmod +x /home/runner/entrypoint.sh
 ENTRYPOINT ["/home/runner/entrypoint.sh"]

@@ -75,6 +75,10 @@ Job `api` (pytest + requests) runs first, then job `e2e` (Playwright). Each uplo
 3. `cd runner`, copy `.env.example` to `.env`, fill in `REPO_URL` and a fresh `RUNNER_TOKEN`
    (Settings → Actions → Runners → New self-hosted runner), then `docker compose up -d --build`.
 4. The container reaches UniFi at `https://host.docker.internal:11443` (`host-gateway` mapping in the compose file).
+5. Python packages and the Chromium browser (with its OS dependencies) are pre-installed into
+   `/home/runner/venv` when the runner image is built, so workflow runs reuse them instead of
+   reinstalling on every run. Re-run `docker compose up -d --build` whenever `requirements.txt`
+   changes so the image picks up the new dependencies.
 
 Security: the workflow has no `pull_request` trigger. For a public repository also set
 Settings → Actions → General → *Require approval for all outside collaborators*.

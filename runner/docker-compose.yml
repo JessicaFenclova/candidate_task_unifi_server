@@ -1,6 +1,8 @@
 services:
   runner:
-    build: .
+    build:
+      context: ..
+      dockerfile: runner/Dockerfile
     restart: unless-stopped
     env_file: .env
     extra_hosts:

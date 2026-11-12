@@ -20,12 +20,10 @@ jobs:
     runs-on: [self-hosted, unifi]
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: |
-          python3 -m venv .venv
-          .venv/bin/pip install -q -r requirements.txt
+      - name: Install/update Python dependencies
+        run: /home/runner/venv/bin/pip install -q -r requirements.txt
       - name: Run API tests
-        run: .venv/bin/python -m pytest -m api --html=reports/api.html --junitxml=reports/api.xml
+        run: /home/runner/venv/bin/python -m pytest -m api --html=reports/api.html --junitxml=reports/api.xml
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -39,13 +37,10 @@ jobs:
     runs-on: [self-hosted, unifi]
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: |
-          python3 -m venv .venv
-          .venv/bin/pip install -q -r requirements.txt
-          .venv/bin/python -m playwright install --with-deps chromium
+      - name: Install/update Python dependencies
+        run: /home/runner/venv/bin/pip install -q -r requirements.txt
       - name: Run Playwright tests
-        run: .venv/bin/python -m pytest -m e2e --html=reports/e2e.html --junitxml=reports/e2e.xml
+        run: /home/runner/venv/bin/python -m pytest -m e2e --html=reports/e2e.html --junitxml=reports/e2e.xml
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV PLAYWRIGHT_BROWSERS_PATH=/home/runner/pw-browsers
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        ca-certificates curl git jq sudo python3 python3-venv python3-pip \
+        ca-certificates curl git jq sudo python3 python3-venv python3-pip libatomic1 \
     && rm -rf /var/lib/apt/lists/* \
     && useradd -m -s /bin/bash runner \
     && echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner

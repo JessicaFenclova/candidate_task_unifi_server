@@ -58,6 +58,13 @@ python -m pytest -m e2e --headed # watch the browser
 
 ## CI: self-hosted runner in Docker (manual trigger)
 
+**Note for reviewers:** the GitHub Actions workflow only works while my personal self-hosted
+runner (a Docker container on my own machine, with the UniFi server also running locally) is
+online. It is **not running continuously** — I start it only when needed. Clicking "Run workflow"
+on this repo will queue the job but it will stay queued/fail unless I've brought the runner up
+for you beforehand. To see it work, either ask me to start the runner ahead of time, or run the
+tests locally with the steps in **Setup**/**Running** above, which don't need any of this.
+
 The workflow `.github/workflows/unifi-tests.yml` runs only on demand (Actions → *UniFi tests* → *Run workflow*).
 Job `api` (pytest + requests) runs first, then job `e2e` (Playwright). Each uploads its reports
 (`api.html`/`api.xml`, `e2e.html`/`e2e.xml`, plus screenshots/traces on failure) as artifacts.

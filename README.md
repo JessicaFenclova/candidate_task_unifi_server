@@ -42,10 +42,10 @@ Edit `.env` (never commit it):
 ## Running
 
 ```powershell
-pytest                 # everything
-pytest -m api          # REST API test only
-pytest -m e2e          # browser test only
-pytest -m e2e --headed # watch the browser
+python -m pytest                 # everything
+python -m pytest -m api          # REST API test only
+python -m pytest -m e2e          # browser test only
+python -m pytest -m e2e --headed # watch the browser
 ```
 
 ## Reports and failures

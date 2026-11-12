@@ -43,7 +43,7 @@ jobs:
         run: |
           python3 -m venv .venv
           .venv/bin/pip install -q -r requirements.txt
-          .venv/bin/playwright install chromium
+          .venv/bin/python -m playwright install --with-deps chromium
       - name: Run Playwright tests
         run: .venv/bin/python -m pytest -m e2e --html=reports/e2e.html --junitxml=reports/e2e.xml
       - uses: actions/upload-artifact@v4
